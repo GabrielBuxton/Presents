@@ -54,6 +54,7 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_SPACE] and self.on_ground:
             self.vel_y = -JUMP_FORCE
             self.on_ground = False
+            
 
         # Apply gravity
         self.vel_y += GRAVITY
@@ -242,6 +243,49 @@ def load_level(level):
     all_sprites.add(platforms)
     all_sprites.add(enemies)
     all_sprites.add(chimney)
+
+    # Level 2 - New Simple Level
+    if level == 2:
+        platforms.add(Platform(100, 500, 200, 20, 'regular'))
+        platforms.add(Platform(300, 450, 150, 20, 'snow'))
+        ice_platform = Platform(500, 400, 200, 20, 'ice')
+        platforms.add(ice_platform)
+        platforms.add(Platform(0, HEIGHT - 20, WIDTH, 20, 'regular'))  # Ground platform
+
+        # Add enemies for Level 2
+        enemies.add(Parent(500, 352, ice_platform))
+        enemies.add(CEO(350, 400))
+
+        # Position the chimney (goal) for Level 2
+        chimney.rect.topleft = (700, 250)
+    
+    # Level 3 - Complex Level
+    if level == 3:
+        # Platforms
+        platforms.add(Platform(50, 550, 100, 20, 'regular'))
+        platforms.add(Platform(200, 500, 150, 20, 'snow'))
+        ice_platform_1 = Platform(400, 450, 150, 20, 'ice')
+        platforms.add(ice_platform_1)
+        platforms.add(Platform(600, 400, 150, 20, 'regular'))
+        platforms.add(Platform(750, 350, 100, 20, 'snow'))
+        platforms.add(Platform(50, HEIGHT - 20, WIDTH, 20, 'regular'))  # Ground platform
+        
+        # Enemies on platforms
+        enemies.add(Parent(400, 402, ice_platform_1))  # Moves along the ice platform
+        enemies.add(Parent(600, 352, ice_platform_1))  # Additional Parent on the same platform
+        enemies.add(CEO(300, 500))  # Positioned to challenge near platforms
+        enemies.add(CEO(700, 300))  # Adds difficulty near the chimney
+
+        # Chimney positioned higher up for a challenge
+        chimney.rect.topleft = (750, 200)
+
+    # Add all sprites to the main group for rendering
+    all_sprites.add(player)
+    all_sprites.add(platforms)
+    all_sprites.add(enemies)
+    all_sprites.add(chimney)
+    
+        
 
 # Main game loop
 def main():
