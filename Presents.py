@@ -7,6 +7,10 @@ pygame.init()
 # Constants
 WIDTH, HEIGHT = 800, 600
 WHITE = (255, 255, 255)
+DARK_GRAY = (30, 30, 30)  # Dark background color
+SNOW_COLOR = (255, 255, 255)  # Snow color (white)
+SNOWFLAKE_COUNT = 100  # Number of snowflakes
+snowflakes = [(random.randint(0, WIDTH), random.randint(0, HEIGHT)) for _ in range(SNOWFLAKE_COUNT)]  # Initial snowflake positions
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
@@ -278,8 +282,15 @@ def main():
                 enemy.update()
         projectiles.update()
 
+        # Dark background
+        window.fill(DARK_GRAY)
+
+        # Snowfall effect
+        for i, (x, y) in enumerate(snowflakes):
+            pygame.draw.circle(window, SNOW_COLOR, (x, y), 2)  # Draw each snowflake as a small circle
+            snowflakes[i] = (x, y + 1) if y < HEIGHT else (random.randint(0, WIDTH), 0)  # Move down or reset at top
+
         # Draw everything
-        window.fill(WHITE)
         all_sprites.draw(window)
         projectiles.draw(window)
 
