@@ -1,11 +1,14 @@
 
+## ROUGH DRAFT ##
+## Presents/Santa/Mario Clone/Platformer Game ##
+
 ## Vermont State University
 ## Game Design Team
-## Gabe Buxton
+## Gabriel Buxton
 ## Seth Barrett
 ## Logan Hayes
 ## John Luce
-## 2024
+## November 2024
 
 import pygame
 import random
