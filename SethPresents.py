@@ -1,7 +1,14 @@
+
+## Vermont State University
+## Game Design Team
+## Gabe Buxton
+## Seth Barrett
+## Logan Hayes
+## John Luce
+## 2024
+
 import pygame
 import random
-
-
 
 # Initialize Pygame
 pygame.init()
@@ -36,7 +43,6 @@ pygame.display.set_caption("Presence of Presents - CEO Projectiles")
 background_image = pygame.image.load("presents.jpeg")
 background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))
 
-
 RUN_LEFT_ROW = 9
 RUN_RIGHT_ROW = 9
 JUMP_LEFT_ROW = 12
@@ -60,8 +66,6 @@ class Player(pygame.sprite.Sprite):
             "jump_left": self.load_frames(JUMP_LEFT_ROW),
             "jump_right": self.load_frames(JUMP_RIGHT_ROW),
             "idle": [self.get_sprite_frame(0)]
-
-
 
             }
 
@@ -94,13 +98,10 @@ class Player(pygame.sprite.Sprite):
             )
         return pygame.transform.scale(frame, (FRAME_WIDTH * 1.2, FRAME_HEIGHT *1.2))
 
-
-
     def update(self, platforms, enemies, projectiles, chimney):
         keys = pygame.key.get_pressed()
 
         previous_action = self.current_action
-
 
         if keys[pygame.K_LEFT] and keys[pygame.K_SPACE]:
             self.current_action = "jump_left"
@@ -125,7 +126,6 @@ class Player(pygame.sprite.Sprite):
         
         action_frames = self.animations.get(self.current_action, [self.image])
 
-
         self.animations["idle"] = [self.get_sprite_frame(0)]
         self.current_action = "idle"
         self.current_frame += ANIMATION_SPEED    
@@ -146,7 +146,6 @@ class Player(pygame.sprite.Sprite):
             self.vel_y = -JUMP_FORCE
             self.on_ground = False
             
-
         # Apply gravity
         self.vel_y += GRAVITY
 
@@ -376,8 +375,6 @@ def load_level(level):
     all_sprites.add(enemies)
     all_sprites.add(chimney)
     
-        
-
 def main():
     global current_level, platforms, enemies, projectiles, all_sprites, player, chimney
 
@@ -401,10 +398,8 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
                 
-
         # Update player and platforms
         player.update(platforms, enemies, projectiles, chimney)
-
 
         # Update enemies and projectiles
         for enemy in enemies:
@@ -420,7 +415,6 @@ def main():
         #Draw the background image 
         window.blit(background_image, (0, 0))
 
-        
         # Snowfall effect
         for i, (x, y) in enumerate(snowflakes):
             pygame.draw.circle(window, SNOW_COLOR, (x, y), 2)  # Draw each snowflake as a small circle
@@ -434,7 +428,6 @@ def main():
         # Draw health bar
         draw_health_bar(window, 10, 10, player.health)
 
-
         # Refresh the display
         pygame.display.flip()
 
@@ -445,3 +438,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
