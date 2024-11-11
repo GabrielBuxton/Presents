@@ -1,3 +1,9 @@
+##NOTES:
+#Fix Santa sprite
+#Enemy sprites
+#Add heart health system
+#Textures for platforms and ground
+#More levels
 
 ## ROUGH DRAFT ##
 ## Presents/Santa/Mario Clone/Platformer Game ##
