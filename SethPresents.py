@@ -22,6 +22,10 @@ import random
 # Initialize Pygame
 pygame.init()
 
+#Music
+mixer.music.load('galacticrap.mp3')
+mixer.music.play(-1)
+
 # Constants
 WIDTH, HEIGHT = 800, 600
 WHITE = (255, 255, 255)
