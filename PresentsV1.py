@@ -5,6 +5,11 @@
 #Textures for platforms and ground
 #More levels
 
+#Weapons (Presents/Candy Canes)
+#Double Jump
+
+## ROUGH DRAFT ##
+
 ## ROUGH DRAFT ##
 ## Presents/Santa/Mario Clone/Platformer Game ##
 
