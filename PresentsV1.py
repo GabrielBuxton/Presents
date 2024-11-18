@@ -23,6 +23,7 @@
 
 import pygame
 import random
+from pygame import mixer
 
 # Initialize Pygame
 pygame.init()
@@ -46,7 +47,7 @@ snowflakes = [(random.randint(0, WIDTH), random.randint(0, HEIGHT)) for _ in ran
 CHIMNEY_COLOR = (128, 64, 0)
 GRAVITY = 0.5
 JUMP_FORCE = 10
-MAX_HEALTH = 6
+MAX_HEALTH = 70
 SNOW_SLOWDOWN = 3
 ICE_SPEEDUP = 5
 PARENT_DAMAGE = 1
@@ -320,15 +321,21 @@ class Chimney(pygame.sprite.Sprite):
         self.rect.y = y
 
 # Health bar display
-def draw_health_bar(surface, x, y, health):
-    bar_width = 200
-    bar_height = 20
-    fill = (health / MAX_HEALTH) * bar_width
-    border_rect = pygame.Rect(x, y, bar_width, bar_height)
-    fill_rect = pygame.Rect(x, y, fill, bar_height)
-    pygame.draw.rect(surface, GREEN, fill_rect)
-    pygame.draw.rect(surface, WHITE, border_rect, 2)
+def draw_health_hearts(surface, x, y, health, max_health):
+    """Draws heart-based health representation."""
+    heart_image = pygame.image.load('heart full sprite.png')  # Load the heart image
+    heart_image = pygame.transform.scale(heart_image, (30, 30))  # Resize heart image
 
+    for i in range(max_health):
+        if i < health:
+            # Draw full hearts for remaining health
+            surface.blit(heart_image, (x + i * 35, y))
+        else:
+            # Draw empty placeholder hearts for lost health
+            empty_heart = pygame.Surface((30, 30), pygame.SRCALPHA)
+            pygame.draw.rect(empty_heart, (150, 0, 0, 128), empty_heart.get_rect())  # Red tint for empty hearts
+            surface.blit(empty_heart, (x + i * 35, y))
+            
 # Level loader
 def load_level(level):
     platforms.empty()
@@ -448,8 +455,8 @@ def main():
         all_sprites.draw(window)
         projectiles.draw(window)
 
-        # Draw health bar
-        draw_health_bar(window, 10, 10, player.health)
+        # With the new heart system:
+        draw_health_hearts(window, 10, 10, player.health, MAX_HEALTH)
 
         # Refresh the display
         pygame.display.flip()
