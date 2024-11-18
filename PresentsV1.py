@@ -23,6 +23,7 @@
 
 import pygame
 import random
+from pygame import mixer
 
 # Initialize Pygame
 pygame.init()
