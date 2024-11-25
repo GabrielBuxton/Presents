@@ -238,60 +238,87 @@ class Player(pygame.sprite.Sprite):
 
 # Platform class
 class Platform(pygame.sprite.Sprite):
-    def __init__(self, x, y, width, height, type):
+    def __init__(self, x, y, width, height, type, texture_file=None):
+        """
+        Initialize the platform with position, dimensions, type, and optional texture.
+        :param x: X position of the platform
+        :param y: Y position of the platform
+        :param width: Width of the platform
+        :param height: Height of the platform
+        :param type: Type of platform ('snow', 'ice', 'regular')
+        :param texture_file: Optional file path for the texture image
+        """
         super().__init__()
-        self.image = pygame.Surface((width, height))
+        self.image = pygame.Surface((width, height), pygame.SRCALPHA)  # Transparent surface
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
         self.type = type
 
-        if type == 'snow':
-            self.image.fill(GRAY)
-        elif type == 'ice':
-            self.image.fill(BLUE)
+        if texture_file:
+            # Load the texture image and scale it to the platform size
+            texture = pygame.image.load(texture_file).convert_alpha()
+            self.image.blit(pygame.transform.scale(texture, (width, height)), (0, 0))
         else:
-            self.image.fill(GREEN)
+            # Default solid color based on platform type
+            if type == 'snow':
+                self.image.fill((200, 200, 200))  # Light gray
+            elif type == 'ice':
+                self.image.fill((0, 255, 255))  # Cyan
+            else:
+                self.image.fill((0, 255, 0))  # Green
 
-# Parent class (Melee attacker)
+# Parent class (Melee attacker, now represents a demon)
 class Parent(pygame.sprite.Sprite):
-    def __init__(self, x, y, ice_platform):
+    def __init__(self, x, y, platform):
         super().__init__()
-        self.image = pygame.Surface((50, 50))
-        self.image.fill(GREEN)
+        self.image = pygame.Surface((50, 50), pygame.SRCALPHA)  # Transparent surface
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
         self.direction = 1
-        self.ice_platform = ice_platform
+        self.platform = platform
+
+        # Draw a simple demon-like appearance
+        pygame.draw.circle(self.image, (255, 0, 0), (25, 25), 25)  # Red body
+        pygame.draw.polygon(self.image, (0, 0, 0), [(10, 10), (25, 0), (40, 10)])  # Horns
+        pygame.draw.circle(self.image, (255, 255, 0), (25, 30), 5)  # Glowing yellow eye
 
     def update(self):
-        # Check if Parent is on the ice platform
-        if self.rect.colliderect(self.ice_platform.rect):
-            self.rect.x += self.direction * ENEMY_SPEED
-            # Reverse direction if hitting ice platform boundaries
-            if self.rect.right >= self.ice_platform.rect.right or self.rect.left <= self.ice_platform.rect.left:
-                self.direction *= -1
-        else:
-            self.rect.x = max(self.rect.x, self.ice_platform.rect.left)  # Snap back to ice platform
+        # Move the Parent enemy left and right on the platform
+        self.rect.x += self.direction * ENEMY_SPEED
+        if self.rect.left <= self.platform.rect.left or self.rect.right >= self.platform.rect.right:
+            self.direction *= -1  # Reverse direction
 
 # CEO class (Ranged attacker)
+# CEO class (Ranged attacker, now represents a demonic spellcaster)
 class CEO(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
-        self.image = pygame.Surface((50, 50))
-        self.image.fill(BLUE)
+        self.image = pygame.Surface((50, 50), pygame.SRCALPHA)  # Transparent surface
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        self.direction = 1
+
+        # Draw a demonic caster appearance
+        pygame.draw.rect(self.image, (50, 0, 50), (0, 0, 50, 50))  # Dark purple body
+        pygame.draw.circle(self.image, (255, 0, 0), (25, 10), 10)  # Red glowing head
+        pygame.draw.polygon(self.image, (0, 0, 0), [(10, 10), (25, 0), (40, 10)])  # Horns
+
         self.shoot_timer = 0
 
     def update(self, projectiles):
+        # Move the CEO enemy back and forth
+        self.rect.x += self.direction * ENEMY_SPEED
+        if self.rect.left <= 300 or self.rect.right >= 500:  # Patrol bounds
+            self.direction *= -1  # Reverse direction
+
         # Shooting projectiles periodically
         self.shoot_timer += 1
-        if self.shoot_timer > 60:  # Shoots every second (at 60 FPS)
+        if self.shoot_timer > 60:  # Shoots every second
             self.shoot_timer = 0
-            projectile = Projectile(self.rect.centerx, self.rect.centery, PROJECTILE_SPEED)
+            projectile = Projectile(self.rect.centerx, self.rect.centery, PROJECTILE_SPEED * self.direction)
             projectiles.add(projectile)
 
 # Projectile class
@@ -353,15 +380,28 @@ def load_level(level):
 
     # Level 1
     if level == 1:
-        platforms.add(Platform(100, 500, 200, 20, 'regular'))
-        platforms.add(Platform(350, 450, 150, 20, 'snow'))
-        ice_platform = Platform(550, 400, 200, 20, 'ice')
-        platforms.add(ice_platform)
-        platforms.add(Platform(0, HEIGHT - 20, WIDTH, 20, 'regular'))  # Ground platform
-        enemies.add(Parent(550, 352, ice_platform))
-        enemies.add(CEO(400, 400))
-        chimney.rect.topleft = (700, 300)
 
+        # Platforms that create a path toward the house chimney
+        platforms.add(Platform(100, 500, 200, 20, 'regular', texture_file="building icy sprite.png"))  # Regular platform with default color
+        platforms.add(Platform(350, 450, 150, 20, 'snow', texture_file="building icy sprite.png"))     # Snow platform with default color
+        platforms.add(Platform(550, 400, 100, 20, 'ice', texture_file="building icy sprite.png"))  # Icy platform with texture
+        platforms.add(Platform(700, 350, 100, 20, 'regular', texture_file="building icy sprite.png"))  # Regular platform with default color
+
+        # Ground platform
+        platforms.add(Platform(0, HEIGHT - 20, WIDTH, 20, 'regular'))  # Ground platform
+        
+        # Ice platform (introducing ice mechanics)
+        ice_platform = Platform(300, 300, 150, 20, 'ice')
+        platforms.add(ice_platform)
+
+        # Enemies
+        enemies.add(Parent(550, 352, ice_platform))  # Enemy on the ice platform
+        enemies.add(CEO(400, 400))                  # Enemy between start and chimney
+
+        # Position the chimney (goal)
+        chimney.rect.topleft = (700, 250)
+
+    # Add all sprites to the main group for rendering
     all_sprites.add(player)
     all_sprites.add(platforms)
     all_sprites.add(enemies)
