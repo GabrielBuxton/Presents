@@ -314,11 +314,19 @@ class Projectile(pygame.sprite.Sprite):
 class Chimney(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
-        self.image = pygame.Surface((50, 100))
-        self.image.fill(CHIMNEY_COLOR)
+        self.width = 70
+        self.height = 120
+        self.image = pygame.Surface((self.width, self.height), pygame.SRCALPHA)  # Transparent surface
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+
+        # Draw the main house structure
+        pygame.draw.rect(self.image, (139, 69, 19), (10, 50, 50, 70))  # Brown house
+        pygame.draw.rect(self.image, (0, 0, 0), (25, 85, 20, 35))      # Door
+
+        # Draw the roof
+        pygame.draw.polygon(self.image, (128, 0, 0), [(5, 50), (35, 10), (65, 50)])  # Red triangle roof
 
 # Health bar display
 def draw_health_hearts(surface, x, y, health, max_health):
