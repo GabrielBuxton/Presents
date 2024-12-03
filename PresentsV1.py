@@ -19,7 +19,7 @@
 ## Seth Barrett
 ## Logan Hayes
 ## John Luce
-## November 2024
+## December 2024
 
 import pygame
 import random
@@ -72,6 +72,17 @@ FRAME_HEIGHT = 50
 NUM_FRAMES = 16
 ANIMATION_SPEED = 0.1
 
+# Define the win screen function
+def show_win_screen():
+    """Display a simple 'You Win' screen and wait for a few seconds."""
+    window.fill(DARK_GRAY)
+    font = pygame.font.Font(None, 74)
+    text = font.render("You Win!", True, WHITE)
+    text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+    window.blit(text, text_rect)
+    pygame.display.flip()
+    pygame.time.delay(3000)  # Pause for 3 seconds
+
 # Player class
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -97,6 +108,17 @@ class Player(pygame.sprite.Sprite):
         self.vel_y = 0
         self.on_ground = False
         self.health = MAX_HEALTH
+
+    def check_chimney_collision(self, chimney):
+        global current_level
+        if pygame.sprite.collide_rect(self, chimney):
+                if current_level == 3:  # Assuming level 3 is the last level
+                    show_win_screen()  # Show the win screen and exit
+                else:
+                    current_level += 1
+                self.rect.center = (WIDTH // 4, HEIGHT // 4)  # Reset player position
+                load_level(current_level)
+
 
     def load_frames(self, row):
         #load all frames from a specific row
@@ -189,7 +211,7 @@ class Player(pygame.sprite.Sprite):
             self.rect.bottom = HEIGHT
             self.vel_y = 0
             self.on_ground = True
-            self.respawn()
+            self.respawn()       
 
     def collide(self, platforms):
         self.on_ground = False
@@ -218,13 +240,6 @@ class Player(pygame.sprite.Sprite):
             if pygame.sprite.collide_rect(self, projectile):
                 self.take_damage(CEO_DAMAGE)
                 projectile.kill()  # Remove projectile after collision
-
-    def check_chimney_collision(self, chimney):
-        if pygame.sprite.collide_rect(self, chimney):
-            global current_level
-            current_level += 1
-            self.rect.center = (WIDTH // 4, HEIGHT // 4)
-            load_level(current_level)
 
     def take_damage(self, amount):
         self.health -= amount
@@ -456,6 +471,7 @@ def load_level(level):
 def main():
     global current_level, platforms, enemies, projectiles, all_sprites, player, chimney
 
+
     # Initialize variables
     current_level = 1
     platforms = pygame.sprite.Group()
@@ -511,7 +527,7 @@ def main():
 
         # Maintain 60 FPS
         clock.tick(60)
-
+       
     pygame.quit()
 
 if __name__ == "__main__":
